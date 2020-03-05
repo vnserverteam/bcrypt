@@ -87,7 +87,7 @@ static ERL_NIF_TERM hashpw(task_t* task)
         salt_sz = task->data.hash.salt.size;
     (void)memcpy(&salt, task->data.hash.salt.data, salt_sz);
 
-    if (bcrypt(encrypted, password, salt)) {
+    if (ts_bcrypt(encrypted, password, salt)) {
         return enif_make_tuple3(
             task->env,
             enif_make_atom(task->env, "error"),
