@@ -35,7 +35,7 @@
 
 typedef unsigned char byte;
 
-char *bcrypt(char *, const char *, const char *);
+int ts_bcrypt(char *, const char *, const char *);
 void encode_salt(char *, u_int8_t *, u_int16_t, u_int8_t);
 
 /* These methods came from the Erlang port command tutorial:
@@ -168,7 +168,7 @@ process_hashpw(ETERM *pid, ETERM *data)
         } else {
             memcpy(password, ERL_BIN_PTR(pwd_bin), ERL_BIN_SIZE(pwd_bin));
             memcpy(salt, ERL_BIN_PTR(slt_bin), ERL_BIN_SIZE(slt_bin));
-            if (bcrypt(encrypted, password, salt)) {
+            if (ts_bcrypt(encrypted, password, salt)) {
                 retval = process_reply(pid, CMD_HASHPW, "Invalid salt");
             } else {
                 retval = process_reply(pid, CMD_HASHPW, encrypted);

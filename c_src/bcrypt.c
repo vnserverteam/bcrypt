@@ -63,7 +63,7 @@
 #define BCRYPT_BLOCKS 6		/* Ciphertext blocks */
 #define BCRYPT_MINROUNDS 16	/* we have log2(rounds) in salt */
 
-int bcrypt(char *, const char *, const char *);
+int ts_bcrypt(char *, const char *, const char *);
 void encode_salt(char *, u_int8_t *, u_int16_t, u_int8_t);
 
 static void encode_base64(u_int8_t *, u_int8_t *, u_int16_t);
@@ -143,7 +143,7 @@ encode_salt(char *salt, u_int8_t *csalt, u_int16_t clen, u_int8_t logr)
    i.e. $2$04$iwouldntknowwhattosayetKdJ6iFtacBqJdKe6aW7ou */
 
 int
-bcrypt(char * encrypted, const char *key, const char *salt)
+ts_bcrypt(char * encrypted, const char *key, const char *salt)
 {
 	blf_ctx state;
 	u_int32_t rounds, i, k;
