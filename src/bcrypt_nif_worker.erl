@@ -18,11 +18,15 @@
           context
          }).
 
-start_link() -> gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+start_link() ->
+  gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
-gen_salt() -> gen_server:call(?MODULE, gen_salt, infinity).
+gen_salt() ->
+  gen_server:call(?MODULE, gen_salt, infinity).
+
 gen_salt(Rounds) ->
     gen_server:call(?MODULE, {gen_salt, Rounds}, infinity).
+
 hashpw(Password, Salt) ->
     gen_server:call(?MODULE, {hashpw, Password, Salt}, infinity).
 
@@ -34,12 +38,14 @@ init([]) ->
 terminate(shutdown, _) -> ok.
 
 handle_call(gen_salt, _From, #state{default_log_rounds = R} = State) ->
-    {reply, {ok, bcrypt_nif:gen_salt(R)}, State};
+    Salt = bcrypt_nif:gen_salt(R),
+    {reply, {ok, Salt}, State};
 handle_call({gen_salt, R}, _From, State) ->
-    {reply, {ok, bcrypt_nif:gen_salt(R)}, State};
+    Salt = bcrypt_nif:gen_salt(R),
+    {reply, {ok, Salt}, State};
 handle_call({hashpw, Password, Salt}, _From, #state{context=Ctx}=State) ->
     Ref = make_ref(),
-    ok = bcrypt_nif:hashpw(Ctx, Ref, self(), Password, Salt),
+    ok = bcrypt_nif:hashpw(Ctx, Ref, self(), to_list(Password), to_list(Salt)),
     receive
         {ok, Ref, Result} ->
             {reply, {ok, Result}, State};
@@ -50,3 +56,6 @@ handle_call(Msg, _, _) -> exit({unknown_call, Msg}).
 handle_cast(Msg, _) -> exit({unknown_cast, Msg}).
 handle_info(Msg, _) -> exit({unknown_info, Msg}).
 code_change(_OldVsn, State, _Extra) -> {ok, State}.
+
+to_list(L) when is_list(L) -> L;
+to_list(B) when is_binary(B) -> binary_to_list(B).

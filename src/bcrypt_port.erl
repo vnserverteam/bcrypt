@@ -14,7 +14,11 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
 
--record(state, {port, default_log_rounds}).
+-record(state, {
+    port :: port(),
+    default_log_rounds :: non_neg_integer(),
+    cmd_from :: {pid(), term()}
+    }).
 
 -define(CMD_SALT, 0).
 -define(CMD_HASH, 1).
@@ -71,38 +75,50 @@ terminate(_Reason, #state{port=Port}) ->
 
 handle_call({encode_salt, R}, From, #state{default_log_rounds = LogRounds} = State) ->
     handle_call({encode_salt, R, LogRounds}, From, State);
-handle_call({encode_salt, R, LogRounds}, From, State) ->
+handle_call({encode_salt, R, LogRounds}, From, #state{ cmd_from = undefined } = State) ->
     Port = State#state.port,
-    Data = term_to_binary({?CMD_SALT, From, {R, LogRounds}}),
-    port_command(Port, Data),
-    {noreply, State};
-handle_call({hashpw, Password, Salt}, From, State) ->
+    Data = term_to_binary({?CMD_SALT, {iolist_to_binary(R), LogRounds}}),
+    erlang:port_command(Port, Data),
+    {noreply, State#state{ cmd_from = From }};
+handle_call({encode_salt, _R, _Rounds}, From, #state{ cmd_from = CmdFrom } = State) ->
+    ?BCRYPT_ERROR("bcrypt: Salt request from ~p whilst busy for ~p", [ From, CmdFrom ]),
+    {reply, {error, {busy, From}}, State};
+handle_call({hashpw, Password, Salt}, From, #state{ cmd_from = undefined } = State) ->
     Port = State#state.port,
-    Data = term_to_binary({?CMD_HASH, From, {Password, Salt}}),
-    port_command(Port, Data),
-    {noreply, State};
+    Data = term_to_binary({?CMD_HASH, {iolist_to_binary(Password), iolist_to_binary(Salt)}}),
+    erlang:port_command(Port, Data),
+    {noreply, State#state{ cmd_from = From }};
+handle_call({hashpw, _Password, _Salt}, From, #state{ cmd_from = CmdFrom } = State) ->
+    ?BCRYPT_ERROR("bcrypt: Hash request from ~p whilst busy for ~p", [ From, CmdFrom ]),
+    {reply, {error, {busy, From}}, State};
 handle_call(stop, _From, State) ->
     {stop, normal, ok, State};
-handle_call(Msg, _, _) -> exit({unknown_call, Msg}).
+handle_call(Msg, _, State) ->
+    {stop, {unknown_call, Msg}, State}.
 
-handle_cast(Msg, _) -> exit({unknown_cast, Msg}).
+handle_cast(Msg, State) ->
+    {stop, {unknown_cast, Msg}, State}.
 
-code_change(_OldVsn, State, _Extra) -> {ok, State}.
+code_change(_OldVsn, State, _Extra) ->
+    {ok, State}.
 
-handle_info({Port, {data, Data}}, #state{port=Port}=State) ->
-    {Cmd, To, Reply0} = binary_to_term(Data),
+handle_info({Port, {data, Data}}, #state{ port = Port, cmd_from = From } = State) ->
     Reply =
-        case {Cmd, Reply0} of
-            {?CMD_SALT, "Invalid salt"} -> {error, invalid_salt};
-            {?CMD_SALT, "Invalid number of rounds"} -> {error, invalid_rounds};
-            {?CMD_HASH, "Invalid salt length"} -> {error, invalid_salt_length};
-            {_, _} when Cmd =:= ?CMD_SALT; Cmd =:= ?CMD_HASH -> {ok, Reply0}
+        case binary_to_term(Data) of
+            {_, Error} when is_atom(Error) ->
+                {error, Error};
+            {?CMD_SALT, Result} when is_binary(Result) ->
+                {ok, binary_to_list(Result)};
+            {?CMD_HASH, Result} when is_binary(Result) ->
+                {ok, binary_to_list(Result)}
         end,
-    gen_server:reply(To, Reply),
+    gen_server:reply(From, Reply),
     ok = bcrypt_pool:available(self()),
-    {noreply, State};
+    {noreply, State#state{ cmd_from = undefined }};
 handle_info({Port, {exit_status, Status}}, #state{port=Port}=State) ->
     %% Rely on whomever is supervising this process to restart.
     ?BCRYPT_WARNING("Port died: ~p", [Status]),
     {stop, port_died, State};
-handle_info(Msg, _) -> exit({unknown_info, Msg}).
+handle_info(Msg, _) ->
+    exit({unknown_info, Msg}).
+
