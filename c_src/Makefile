@@ -28,11 +28,11 @@ ifeq ($(UNAME_SYS), Darwin)
 	DRV_LDFLAGS = -flat_namespace -undefined suppress $(ERL_LDFLAGS) -lpthread
 else ifeq ($(UNAME_SYS), FreeBSD)
 	CC ?= cc
-	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
+	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes -lpthread
 	CXXFLAGS ?= -O3 -Wall
 else ifeq ($(UNAME_SYS), Linux)
 	CC ?= gcc
-	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
+	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes -lpthread
 	CXXFLAGS ?= -O3 -Wall
 endif
 
