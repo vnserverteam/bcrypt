@@ -24,14 +24,14 @@
 #include "erl_blf.h"
 #include "bcrypt_nif.h"
 
-void free_task(task_t* task)
+static void free_task(task_t* task)
 {
     if (task->env != NULL)
         enif_free_env(task->env);
     enif_free(task);
 }
 
-task_t* alloc_task(task_type_t type)
+static task_t* alloc_task(task_type_t type)
 {
     task_t* task = (task_t*)enif_alloc(sizeof(task_t));
     if (task == NULL)
@@ -41,7 +41,7 @@ task_t* alloc_task(task_type_t type)
     return task;
 }
 
-task_t* alloc_init_task(task_type_t type, ERL_NIF_TERM ref, ErlNifPid pid, int num_orig_terms, const ERL_NIF_TERM orig_terms[])
+static task_t* alloc_init_task(task_type_t type, ERL_NIF_TERM ref, ErlNifPid pid, int num_orig_terms, const ERL_NIF_TERM orig_terms[])
 {
     task_t* task = alloc_task(type);
     task->pid = pid;
@@ -102,7 +102,7 @@ static ERL_NIF_TERM hashpw(task_t* task)
         enif_make_string(task->env, encrypted, ERL_NIF_LATIN1));
 }
 
-void* async_worker(void* arg)
+static void* async_worker(void* arg)
 {
     ctx_t* ctx;
     task_t* task;

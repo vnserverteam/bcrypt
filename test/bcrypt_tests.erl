@@ -108,8 +108,12 @@ simple_nif_test_() ->
 
 pair_nif_test_() ->
     {setup, fun() -> ok = start_with(nif) end,
-     [?_assert({ok, Hash} =:= bcrypt:hashpw(Pass, Salt)) ||
-         {Pass, Salt, Hash} <- ?PAIRS]}.
+     [
+        begin
+            ?_assert({ok, Hash} =:= bcrypt:hashpw(Pass, Salt))
+        end
+        || {Pass, Salt, Hash} <- ?PAIRS
+     ]}.
 
 simple_port_test_() ->
     {setup, fun() -> ok = start_with(port) end,
@@ -123,5 +127,9 @@ simple_port_test_() ->
 
 pair_port_test_() ->
     {setup, fun() -> ok = start_with(port) end,
-     [?_assert({ok, Hash} =:= bcrypt:hashpw(Pass, Salt)) ||
-         {Pass, Salt, Hash} <- ?PAIRS]}.
+     [
+        begin
+            ?_assert({ok, Hash} =:= bcrypt:hashpw(Pass, Salt))
+        end
+        || {Pass, Salt, Hash} <- ?PAIRS
+     ]}.
