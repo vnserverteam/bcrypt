@@ -23,17 +23,16 @@ UNAME_SYS := $(shell uname -s)
 ifeq ($(UNAME_SYS), Darwin)
 	CC ?= cc
 	CFLAGS ?= -O3 -std=c99 -arch x86_64 -Wall -Wmissing-prototypes
-	CXXFLAGS ?= -O3 -arch x86_64 -Wall
 	LDFLAGS ?= -arch x86_64 -flat_namespace -undefined suppress
-	DRV_LDFLAGS = -flat_namespace -undefined suppress $(ERL_LDFLAGS) -lpthread
+	DRV_LDFLAGS = -flat_namespace -undefined suppress $(ERL_LDFLAGS)
 else ifeq ($(UNAME_SYS), FreeBSD)
 	CC ?= cc
-	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes -lpthread
-	CXXFLAGS ?= -O3 -Wall
+	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
+	DRV_LDFLAGS = $(ERL_LDFLAGS)
 else ifeq ($(UNAME_SYS), Linux)
 	CC ?= gcc
-	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes -lpthread
-	CXXFLAGS ?= -O3 -Wall
+	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
+	DRV_LDFLAGS = $(ERL_LDFLAGS)
 endif
 
 #   {"DRV_LDFLAGS","-shared $ERL_LDFLAGS -lpthread"},
@@ -44,10 +43,8 @@ endif
 #   {"LDFLAGS", "$LDFLAGS -lpthread"}
 
 CFLAGS += -fPIC -I $(ERTS_INCLUDE_DIR) -I $(ERL_INTERFACE_INCLUDE_DIR)
-CXXFLAGS += -fPIC -I $(ERTS_INCLUDE_DIR) -I $(ERL_INTERFACE_INCLUDE_DIR)
 
-LD_FLAGS += -lpthread
-LDLIBS += -L $(ERL_INTERFACE_LIB_DIR) -lei
+LDLIBS += -L $(ERL_INTERFACE_LIB_DIR) -lei -lpthread
 
 # Verbosity.
 
