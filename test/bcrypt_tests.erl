@@ -84,6 +84,7 @@
 
 start_with(Mechanism) when Mechanism =:= nif; Mechanism =:= port ->
     application:start(crypto),
+    application:start(poolboy),
     case application:load(bcrypt) of
         {error, {already_loaded, bcrypt}} -> ok;
         ok -> ok
