@@ -9,10 +9,45 @@ algorithm, as described in
 [A Future-Adaptable Password Scheme](http://www.openbsd.org/papers/bcrypt-paper.ps) 
 by Niels Provos and David Mazieres.
 
+This bcrypt repository at erlangpack is in active maintainance and used
+as the basis of the Hex package.
+
+
+OTP Compatibility
+-----------------
+
+erlang-bcrypt is compatible with OTP 21.3 to 23.
+
+Use version 1.0.3 on OTP versions before 21.3
+
+In version 1.1.0 support for OTP 21.2 and earlier is removed
+due to the removal of erl_interface in OTP 23.
+
+
+Rebar.config
+------------
+
+erlang-bcrypt is on Hex:
+
+  ```erlang
+  {deps, [
+      {bcrypt, "1.1.0"}
+  ]}.
+  ```
+
+To use the master branch:
+
+  ```erlang
+  {deps, [
+      {bcrypt, {git, ".*", {git, "https://github.com/erlangpack/bcrypt.git", {branch, "master"}}}
+  ]}.
+  ```
+
+
 Basic build instructions
 ------------------------
 
-1. Build it (project uses rebar, but I’ve included a Makefile):
+1. Build it (project uses rebar3, a Makefile is included):
 
     ```shell
     make
@@ -21,7 +56,16 @@ Basic build instructions
 2. Run it (simple way, starting sasl, crypto and bcrypt):
 
     ```shell
-    erl -pa ebin -boot start_sasl -s crypto -s bcrypt
+    $ ./rebar3 shell
+    ===> Verifying dependencies...
+    ===> Compiling bcrypt
+    make: Nothing to be done for `all'.
+    Erlang/OTP 23 [erts-11.0] [source] [64-bit] [smp:12:12] [ds:12:12:10] [async-threads:1] [hipe]
+
+    Eshell V11.0  (abort with ^G)
+    1> application:ensure_all_started(bcrypt).
+    {ok,[bcrypt]}
+    2>     
     ```
 
 Basic usage instructions
@@ -64,6 +108,19 @@ application's environment:
 
 `pool_size`
   Specifies the size of the port program pool. Defaults to ``4``.
+
+
+Run tests
+---------
+
+To run the eunit tests use:
+
+```shell
+make tests
+```
+
+Both the _port_ and the _NIF_ version of bcrypt are tested.
+All tests should pass.
 
 Original authors
 ----------------
