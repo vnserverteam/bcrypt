@@ -115,9 +115,9 @@ Run tests
 
 To run the eunit tests use:
 
-    ```shell
-    make tests
-    ```
+```shell
+make tests
+```
 
 Both the port as the NIF version of bcrypt are tested.
 
