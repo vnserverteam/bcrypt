@@ -109,6 +109,11 @@ application's environment:
 `pool_size`
   Specifies the size of the port program pool. Defaults to ``4``.
 
+`nif_pool_size`
+  Specifies the size of the nif program pool. Defaults to ``4``.
+
+`nif_pool_max_overflow`
+  Specifies the max workers to overflow of the nif program pool. Defaults to ``10``.
 
 Run tests
 ---------

@@ -2,9 +2,9 @@
 {application, bcrypt, [
     {description, "An Erlang wrapper (NIF or port program) for the OpenBSD password scheme, bcrypt."},
     {vsn, "git"},
-    {registered, [bcrypt_sup, bcrypt_nif_worker, bcrypt_port_sup, bcrypt_pool]},
+    {registered, [bcrypt_sup, bcrypt_port_sup, bcrypt_pool]},
     {mod, {bcrypt_app, []}},
-    {applications, [kernel, stdlib, crypto]},
+    {applications, [kernel, stdlib, crypto, poolboy]},
     {env, [
         % Default number of 'rounds', defining the hashing complexity
         {default_log_rounds, 12},
@@ -13,7 +13,11 @@
         {mechanism, nif},
 
         % Size of port program pool
-        {pool_size, 4}
+        {pool_size, 4},
+
+        {nif_pool_size, 4},
+        {nif_pool_max_overflow, 10}
+
     ]},
     {maintainers, ["Hunter Morris", "Mrinal Wadhwa", "ErlangPack"]},
     {licenses, ["MIT"]},
