@@ -119,7 +119,8 @@ To run the eunit tests use:
 make tests
 ```
 
-Both the port as the NIF version of bcrypt are tested.
+Both the _port_ and the _NIF_ version of bcrypt are tested.
+All tests should pass.
 
 Original authors
 ----------------
