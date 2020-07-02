@@ -25,12 +25,12 @@ ifeq ($(UNAME_SYS), Darwin)
 	CFLAGS ?= -O3 -std=c99 -arch x86_64 -Wall -Wmissing-prototypes
 	LDFLAGS ?= -arch x86_64 -flat_namespace -undefined suppress
 	DRV_LDFLAGS = -flat_namespace -undefined suppress $(ERL_LDFLAGS)
-else ifeq ($(UNAME_SYS), FreeBSD)
-	CC ?= cc
-	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
-	DRV_LDFLAGS = $(ERL_LDFLAGS)
 else ifeq ($(UNAME_SYS), Linux)
 	CC ?= gcc
+	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes -D_BSD_SOURCE
+	DRV_LDFLAGS = $(ERL_LDFLAGS)
+else # FreeBSD
+	CC ?= cc
 	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
 	DRV_LDFLAGS = $(ERL_LDFLAGS)
 endif

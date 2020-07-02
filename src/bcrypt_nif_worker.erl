@@ -20,24 +20,24 @@
 
 start_link(Args) -> gen_server:start_link(?MODULE, Args, []).
 
-gen_salt() -> 
-    poolboy:transaction(nif_pool, fun(Worker) ->
+gen_salt() ->
+    poolboy:transaction(bcrypt_nif_pool, fun(Worker) ->
         gen_server:call(Worker, gen_salt, infinity)
     end).
 
 gen_salt(Rounds) ->
-    poolboy:transaction(nif_pool, fun(Worker) ->
+    poolboy:transaction(bcrypt_nif_pool, fun(Worker) ->
         gen_server:call(Worker, {gen_salt, Rounds}, infinity)
     end).
 
 
 hashpw(Password, Salt) ->
-    poolboy:transaction(nif_pool, fun(Worker) ->
+    poolboy:transaction(bcrypt_nif_pool, fun(Worker) ->
          gen_server:call(Worker, {hashpw, Password, Salt}, infinity)
     end).
 
 init([]) ->
-    process_flag(trap_exit, true),    
+    process_flag(trap_exit, true),
     {ok, Default} = application:get_env(bcrypt, default_log_rounds),
     Ctx = bcrypt_nif:create_ctx(),
     {ok, #state{default_log_rounds = Default, context = Ctx}}.
