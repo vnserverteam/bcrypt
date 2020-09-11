@@ -23,7 +23,8 @@ UNAME_SYS := $(shell uname -s)
 ifeq ($(UNAME_SYS), Darwin)
 	CC ?= cc
 	CFLAGS ?= -O3 -std=c99 -arch x86_64 -Wall -Wmissing-prototypes
-	LDFLAGS ?= -arch x86_64 -flat_namespace -undefined suppress
+	LDFLAGS ?= -arch x86_64
+        LDFLAGS += -flat_namespace -undefined suppress
 	DRV_LDFLAGS = -flat_namespace -undefined suppress $(ERL_LDFLAGS)
 else ifeq ($(UNAME_SYS), Linux)
 	CC ?= gcc
