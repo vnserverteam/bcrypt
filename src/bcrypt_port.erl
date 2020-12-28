@@ -17,7 +17,7 @@
 -record(state, {
     port :: port(),
     default_log_rounds :: non_neg_integer(),
-    cmd_from :: {pid(), term()}
+    cmd_from :: {pid(), term()} | undefined
     }).
 
 -define(CMD_SALT, 0).

@@ -1,7 +1,7 @@
 bcrypt
 ======
 
-[![Build Status](https://travis-ci.org/erlangpack/bcrypt.svg?branch=master)](https://travis-ci.org/erlangpack/bcrypt)
+![Test](https://github.com/erlangpack/bcrypt/workflows/Test/badge.svg)
 [![Hex pm](http://img.shields.io/hexpm/v/bcrypt.svg?style=flat)](https://hex.pm/packages/bcrypt)
 
 erlang-bcrypt is a wrapper around the OpenBSD Blowfish password hashing
