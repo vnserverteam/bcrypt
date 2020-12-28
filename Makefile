@@ -8,8 +8,14 @@ all: compile
 compile: $(REBAR)
 	$(REBAR) compile
 
-tests: $(REBAR)
-	$(REBAR) eunit
+xref: $(REBAR)
+	$(REBAR) as test xref
+
+test: $(REBAR)
+	$(REBAR) as test eunit
+
+dialyzer: $(REBAR)
+	$(REBAR) as test dialyzer
 
 clean: $(REBAR)
 	$(REBAR) clean
