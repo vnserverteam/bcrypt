@@ -31,7 +31,7 @@ erlang-bcrypt is on Hex:
 
   ```erlang
   {deps, [
-      {bcrypt, "1.1.0"}
+      {bcrypt, "1.1.3"}
   ]}.
   ```
 
