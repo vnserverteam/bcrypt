@@ -27,7 +27,7 @@ ifeq ($(UNAME_SYS), Darwin)
 	DRV_LDFLAGS = -flat_namespace -undefined suppress $(ERL_LDFLAGS)
 else ifeq ($(UNAME_SYS), Linux)
 	CC ?= gcc
-	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes -D_BSD_SOURCE
+	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes -D_DEFAULT_SOURCE
 	DRV_LDFLAGS = $(ERL_LDFLAGS)
 else # FreeBSD
 	CC ?= cc
