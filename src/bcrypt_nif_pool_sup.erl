@@ -15,8 +15,8 @@ init([]) ->
 
     PoolArgs = [
         {name, {local, bcrypt_nif_pool}},
-        {nif_pool_size, PoolSize},
-        {nif_pool_max_overflow, MaxOverFlow},
+        {size, PoolSize},
+        {max_overflow, MaxOverFlow},
         {worker_module, bcrypt_nif_worker}
     ],
 
