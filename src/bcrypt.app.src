@@ -19,6 +19,9 @@
         {nif_pool_max_overflow, 10}
 
     ]},
+    {exclude_files, [
+        "priv/bcrypt"
+    ]},
     {maintainers, ["Hunter Morris", "Mrinal Wadhwa", "ErlangPack"]},
     {licenses, ["MIT"]},
     {links, [{"Github", "https://github.com/erlangpack/bcrypt"}]}
