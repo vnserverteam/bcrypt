@@ -1,4 +1,6 @@
-%% Copyright (c) 2011 Hunter Morris
+%% @copyright 2011 Hunter Morris
+%% @doc Implementation of `gen_server' behaviour.
+%% @end
 %% Distributed under the MIT license; see LICENSE for details.
 -module(bcrypt_port).
 -author('Hunter Morris <hunter.morris@smarkets.com>').
@@ -20,11 +22,20 @@
     cmd_from :: {pid(), term()} | undefined
     }).
 
+-type state() :: #state{port :: port(), 
+	default_log_rounds :: non_neg_integer(), 
+	cmd_from :: {pid(), term()} | undefined}.
+
 -define(CMD_SALT, 0).
 -define(CMD_HASH, 1).
 -define(BCRYPT_ERROR(F, D), error_logger:error_msg(F, D)).
 -define(BCRYPT_WARNING(F, D), error_logger:warning_msg(F, D)).
 
+-spec start_link() -> Result when
+	Result :: {ok,Pid} | ignore | {error,Error},
+	Pid :: pid(),
+	Error :: {already_started,Pid} | term(),
+	Pid :: pid().
 start_link() ->
     Dir = case code:priv_dir(bcrypt) of
               {error, bad_name} ->
@@ -40,22 +51,40 @@ start_link() ->
     Port = filename:join(Dir, "bcrypt"),
     gen_server:start_link(?MODULE, [Port], []).
 
+-spec stop() -> Result when
+	Result :: {stop, normal, ok, state()}.
 stop() -> gen_server:call(?MODULE, stop).
 
+-spec gen_salt(Pid) -> Result when
+	Pid :: pid(),
+	Result :: {ok, Salt},
+	Salt :: [byte()].
 gen_salt(Pid) ->
     R = crypto:strong_rand_bytes(16),
     gen_server:call(Pid, {encode_salt, R}, infinity).
 
+-spec gen_salt(Pid, LogRounds) -> Result when
+	Pid :: pid(),
+	LogRounds :: bcrypt:rounds(),
+	Result :: {ok, Salt},
+	Salt :: [byte()].
 gen_salt(Pid, LogRounds) ->
     R = crypto:strong_rand_bytes(16),
     gen_server:call(Pid, {encode_salt, R, LogRounds}, infinity).
 
+-spec hashpw(Pid, Password, Salt) -> Result when
+	Pid :: pid(),
+	Password :: [byte()],
+	Salt :: [byte()],
+	Result :: [byte()].
 hashpw(Pid, Password, Salt) ->
     gen_server:call(Pid, {hashpw, Password, Salt}, infinity).
 
 %%====================================================================
 %% gen_server callbacks
 %%====================================================================
+%% @private
+
 init([Filename]) ->
     case file:read_file_info(Filename) of
         {ok, _Info} ->
@@ -69,9 +98,13 @@ init([Filename]) ->
             {stop, error_opening_bcrypt_file}
     end.
 
+%% @private
+
 terminate(_Reason, #state{port=Port}) ->
     catch port_close(Port),
     ok.
+
+%% @private
 
 handle_call({encode_salt, R}, From, #state{default_log_rounds = LogRounds} = State) ->
     handle_call({encode_salt, R, LogRounds}, From, State);

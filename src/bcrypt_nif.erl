@@ -1,9 +1,9 @@
 %% @author Hunter Morris <hunter.morris@smarkets.com>
 %% @copyright 2011 Hunter Morris
 %%
-%% @doc Wrapper around the OpenBSD Blowfish password hashing algorithm, as
-%% described in "A Future-Adaptable Password Scheme" by Niels Provos and
-%% David Mazieres: http://www.openbsd.org/papers/bcrypt-paper.ps
+%% @doc Bcrypt Erlang wrapper. <div>The wrapper around the OpenBSD Blowfish password hashing algorithm, as
+%% described in: [http://www.openbsd.org/papers/bcrypt-paper.ps "A Future-Adaptable Password Scheme"]
+%% by Niels Provos and David Mazieres.</div>
 %% @end
 %%
 %% Permission to use, copy, modify, and distribute this software for any
@@ -28,9 +28,15 @@
 
 %%--------------------------------------------------------------------
 %% @doc Load the bcrypt NIFs
-%% @spec init() -> ok
+%% @private
 %% @end
 %%--------------------------------------------------------------------
+
+-spec init() -> Result when
+	Result :: ok | Error,
+	Error :: {error, {Reason, ErrorText}},
+	Reason :: load_failed | bad_lib | load | reload | upgrade | old_code,
+	ErrorText :: string().
 init() ->
     Dir = case code:priv_dir(bcrypt) of
               {error, bad_name} ->
@@ -49,9 +55,12 @@ init() ->
 %% @doc Generate a random text salt for use with hashpw/3. LogRounds
 %% defines the complexity of the hashing, increasing the cost as
 %% 2^log_rounds.
-%% @spec gen_salt(integer()) -> string()
 %% @end
 %%--------------------------------------------------------------------
+
+-spec gen_salt(LogRounds) -> Result when  
+	LogRounds :: integer(),
+	Result :: [byte()].
 gen_salt(LogRounds)
   when is_integer(LogRounds), LogRounds < 32, LogRounds > 3 ->
     R = crypto:strong_rand_bytes(16),
@@ -62,22 +71,27 @@ encode_salt(_R, _LogRounds) ->
 
 %%--------------------------------------------------------------------
 %% @doc Create a context which hashes passwords in a separate thread.
-%% @spec create_ctx() -> term()
 %% @end
 %%--------------------------------------------------------------------
+
+-spec create_ctx() -> Context when
+	Context :: term().
 create_ctx() ->
     nif_stub_error(?LINE).
 
 %%--------------------------------------------------------------------
 %% @doc Hash the specified password and the salt using the OpenBSD
 %% Blowfish password hashing algorithm. Returns the hashed password.
-%% @spec hashpw(Ctx::term(),
-%%              Ref::reference(),
-%%              Pid::pid(),
-%%              Password::binary(),
-%%              Salt::binary()) -> string()
 %% @end
 %%--------------------------------------------------------------------
+
+-spec hashpw(Ctx, Ref, Pid, Password, Salt) -> Result when 
+	Ctx :: term(), 
+	Ref :: reference(), 
+	Pid :: pid(), 
+	Password :: [byte()], 
+	Salt :: [byte()],
+	Result :: ok.
 hashpw(_Ctx, _Ref, _Pid, _Password, _Salt) ->
     nif_stub_error(?LINE).
 
