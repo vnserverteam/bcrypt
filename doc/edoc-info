@@ -1,3 +1,0 @@
-%% encoding: UTF-8
-{application,bcrypt}.
-{modules,[bcrypt,bcrypt_nif,bcrypt_nif_worker,bcrypt_pool,bcrypt_port]}.

@@ -13,6 +13,7 @@ xref: $(REBAR)
 
 test: $(REBAR)
 	$(REBAR) as test eunit
+	$(REBAR) as test proper
 
 dialyzer: $(REBAR)
 	$(REBAR) as test dialyzer
