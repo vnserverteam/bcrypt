@@ -63,13 +63,29 @@ hashpw(Password, Salt) ->
     do_hashpw(mechanism(), Password, Salt).
 
 %% @private
+
+-spec do_gen_salt(nif | port) -> Result when
+	Result :: {ok, Salt},
+	Salt :: [byte()].
 do_gen_salt(nif)  -> bcrypt_nif_worker:gen_salt();
 do_gen_salt(port) -> bcrypt_pool:gen_salt().
 
 %% @private
+
+-spec do_gen_salt(nif | port, Rounds) -> Result when
+	Rounds :: rounds(),
+	Result :: {ok, Salt},
+	Salt :: [byte()].
 do_gen_salt(nif, Rounds)  -> bcrypt_nif_worker:gen_salt(Rounds);
 do_gen_salt(port, Rounds) -> bcrypt_pool:gen_salt(Rounds).
 
 %% @private
+
+-spec do_hashpw(nif | port, Password, Salt) -> Result when
+	Password :: [byte()] | binary(), 
+	Salt :: [byte()],
+	Result :: {ok, Hash} | {error, ErrorDescription},
+	Hash :: [byte()],
+	ErrorDescription :: pwerr().
 do_hashpw(nif, Password, Salt)  -> bcrypt_nif_worker:hashpw(Password, Salt);
 do_hashpw(port, Password, Salt) -> bcrypt_pool:hashpw(Password, Salt).
