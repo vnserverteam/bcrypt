@@ -1,4 +1,7 @@
-%% Copyright (c) 2011 Hunter Morris
+%% @copyright 2011 Hunter Morris
+%% @doc Implementation of `supervisor' behaviour.
+%% @private
+%% @end
 %% Distributed under the MIT license; see LICENSE for details.
 -module(bcrypt_port_sup).
 -author('Hunter Morris <huntermorris@gmail.com>').
@@ -8,6 +11,7 @@
 -export([start_link/0, start_child/0, init/1]).
 
 start_link() -> supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+
 start_child() -> supervisor:start_child(?MODULE, []).
 
 init([]) ->

@@ -118,10 +118,43 @@ application's environment:
 Run tests
 ---------
 
-To run the eunit tests use:
+To run the eunit and proper tests use:
 
 ```shell
 make tests
+```
+
+To test all exported function of a module use:
+
+```shell
+$ ./rebar3 as test shell
+===> Verifying dependencies...
+===> Compiling bcrypt
+make: Nothing to be done for `all'.
+Erlang/OTP 23 [erts-11.0] [source] [64-bit] [smp:12:12] [ds:12:12:10] [async-threads:1] [hipe]
+
+Eshell V11.0  (abort with ^G)
+1> application:ensure_all_started(bcrypt).
+{ok,[bcrypt]}
+2>proper:check_specs(bcrypt).            
+Testing bcrypt:gen_salt/0
+....................................................................................................
+OK: Passed 100 test(s).
+    
+Testing bcrypt:hashpw/2
+....................................................................................................
+OK: Passed 100 test(s).
+    
+Testing bcrypt:gen_salt/1
+....................................................................................................
+OK: Passed 100 test(s).
+    
+Testing bcrypt:mechanism/0
+....................................................................................................
+OK: Passed 100 test(s).
+    
+[]
+4> 
 ```
 
 Both the _port_ and the _NIF_ version of bcrypt are tested.

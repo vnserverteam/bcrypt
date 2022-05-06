@@ -9,6 +9,7 @@ logs/*
 rebar3
 .rebar3
 .rebar
+doc
 
 ## libtool
 .deps
