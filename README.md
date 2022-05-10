@@ -87,7 +87,7 @@ Verify the password:
 true
 4> {ok, Hash} =:= bcrypt:hashpw("bar", Hash).
 false
-````
+```
 
 Configuration
 -------------
@@ -97,23 +97,22 @@ application's environment:
 
 `default_log_rounds`
   Sets the default number of rounds which define the complexity of the
-  hash function. Defaults to ``12``.
+  hash function. Defaults to `12`.
 
 `mechanism`
   Specifies whether to use the NIF implementation (`'nif'`) or a
   pool of port programs (`'port'`). Defaults to `'nif'`.
 
-  `Note: the NIF implementation no longer blocks the Erlang VM
-  scheduler threads`
+  `Note: the NIF implementation no longer blocks the Erlang VM scheduler threads`
 
 `pool_size`
-  Specifies the size of the port program pool. Defaults to ``4``.
+  Specifies the size of the port program pool. Defaults to `4`.
 
 `nif_pool_size`
-  Specifies the size of the nif program pool. Defaults to ``4``.
+  Specifies the size of the nif program pool. Defaults to `4`.
 
 `nif_pool_max_overflow`
-  Specifies the max workers to overflow of the nif program pool. Defaults to ``10``.
+  Specifies the max workers to overflow of the nif program pool. Defaults to `10`.
 
 Run tests
 ---------
@@ -130,7 +129,7 @@ To test all exported function of a module use:
 $ ./rebar3 as test shell
 ===> Verifying dependencies...
 ===> Compiling bcrypt
-make: Nothing to be done for `all'.
+make: Nothing to be done for all.
 Erlang/OTP 23 [erts-11.0] [source] [64-bit] [smp:12:12] [ds:12:12:10] [async-threads:1] [hipe]
 
 Eshell V11.0  (abort with ^G)
@@ -156,6 +155,27 @@ OK: Passed 100 test(s).
 []
 4> 
 ```
+
+## Documentation generation
+
+### Edoc
+
+#### Generate public API
+```
+rebar3 edoc
+```
+
+#### Generate private API
+```
+rebar3 as edoc_private edoc
+```
+
+### ExDoc
+
+```
+rebar3 ex_doc --output edoc
+```
+
 
 Both the _port_ and the _NIF_ version of bcrypt are tested.
 All tests should pass.

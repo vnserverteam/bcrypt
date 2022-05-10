@@ -18,14 +18,6 @@ test: $(REBAR)
 dialyzer: $(REBAR)
 	$(REBAR) as test dialyzer
 
-edoc:
-	mkdir -p doc && cp -fR doc_src/* doc
-	$(REBAR) edoc
-	
-edoc_private:
-	mkdir -p doc && cp -fR doc_src/* doc
-	$(REBAR) as edoc_private edoc
-
 clean: $(REBAR)
 	$(REBAR) clean
 
@@ -34,3 +26,15 @@ clean: $(REBAR)
 		-eval '{ok, saved_to_file} = httpc:request(get, {"$(REBAR_URL)", []}, [], [{stream, "./rebar3"}])' \
 		-s inets stop -s init stop
 	chmod +x ./rebar3
+
+##
+## Doc targets
+##
+edoc: $(REBAR)
+	$(REBAR) edoc
+
+edoc_private: $(REBAR)	
+	$(REBAR) as edoc_private edoc
+
+exdoc: $(REBAR)	
+	$(REBAR) ex_doc --logo doc/img/logo.png --output edoc
