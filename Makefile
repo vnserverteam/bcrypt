@@ -1,7 +1,7 @@
 REBAR := $(shell which rebar3 2>/dev/null || echo ./rebar3)
 REBAR_URL := https://s3.amazonaws.com/rebar3/rebar3
 
-.PHONY: clean compile tests
+.PHONY: clean compile test
 
 all: compile
 
