@@ -10,6 +10,7 @@
 -export([start_link/0, available/1]).
 -export([gen_salt/0, gen_salt/1]).
 -export([hashpw/2]).
+-export([is_worker_available/0]).
 
 %% gen_server
 -export([init/1, code_change/3, terminate/2,
@@ -34,12 +35,19 @@
 	Error :: {already_started,Pid} | term().
 start_link() -> gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
-%% @doc Asynchronosly check if `Pid' in `#state:requests' queue or not.
+%% @doc Asynchronously check if `Pid' in `#state:requests' queue or not.
 
 -spec available(Pid) -> Result when
 	Pid :: pid(),
 	Result :: ok.
 available(Pid) -> gen_server:cast(?MODULE, {available, Pid}).
+
+%% @doc Is at least one bcrypt worker currently available for work?
+
+-spec is_worker_available() -> Result when
+	Result :: boolean().
+is_worker_available() ->
+    gen_server:call(?MODULE, is_worker_available, infinity).
 
 %% @doc Generate a random text salt.
 
@@ -100,6 +108,8 @@ handle_call(request, {RPid, _} = From, #state{ports = P} = State) ->
             #state{busy = B} = State,
             {reply, {ok, PPid}, State#state{busy = B + 1, ports = P1}}
     end;
+handle_call(is_worker_available, _From, #state{size = Size, busy = Busy} = State) ->
+    {reply, Size > Busy, State};
 handle_call(Msg, _, _) -> exit({unknown_call, Msg}).
 
 %% @private

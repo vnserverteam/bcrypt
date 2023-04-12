@@ -7,7 +7,7 @@
 %% API
 -export([start/0, stop/0]).
 -export([mechanism/0]).
--export([gen_salt/0, gen_salt/1, hashpw/2]).
+-export([gen_salt/0, gen_salt/1, hashpw/2, is_worker_available/0]).
 
 -type mechanism() :: nif | port.
 -type rounds() :: 4..31.
@@ -62,6 +62,13 @@ gen_salt(Rounds) when is_integer(Rounds), Rounds < 32, Rounds > 3 ->
 hashpw(Password, Salt) ->
     do_hashpw(mechanism(), Password, Salt).
 
+%% @doc Is at least one bcrypt worker currently available for work?
+
+-spec is_worker_available() -> Result when
+	Result :: boolean().
+is_worker_available() ->
+    do_is_worker_available(mechanism()).
+
 %% @private
 
 -spec do_gen_salt(nif | port) -> Result when
@@ -89,3 +96,8 @@ do_gen_salt(port, Rounds) -> bcrypt_pool:gen_salt(Rounds).
 	ErrorDescription :: pwerr().
 do_hashpw(nif, Password, Salt)  -> bcrypt_nif_worker:hashpw(Password, Salt);
 do_hashpw(port, Password, Salt) -> bcrypt_pool:hashpw(Password, Salt).
+
+-spec do_is_worker_available(nif | port) -> Result when
+	Result :: boolean().
+do_is_worker_available(nif)  -> bcrypt_nif_worker:is_worker_available();
+do_is_worker_available(port) -> bcrypt_pool:is_worker_available().
