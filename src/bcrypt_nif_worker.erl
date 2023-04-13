@@ -10,6 +10,7 @@
 -export([start_link/1]).
 -export([gen_salt/0, gen_salt/1]).
 -export([hashpw/2]).
+-export([is_worker_available/0]).
 
 %% gen_server
 -export([init/1, code_change/3, terminate/2,
@@ -63,6 +64,14 @@ hashpw(Password, Salt) ->
          gen_server:call(Worker, {hashpw, Password, Salt}, infinity)
     end).
 
+%% @doc Is at least one bcrypt worker currently available for work?
+
+-spec is_worker_available() -> Result when
+	Result :: boolean().
+is_worker_available() ->
+	{StateName, _Workers, _Overflow, _Size} = poolboy:status(bcrypt_nif_pool),
+	StateName =/= full.
+	
 %% @private
 
 -spec init(Args) -> Result when 
