@@ -260,7 +260,11 @@ loop(void)
 int
 main(int argc, char *argv[])
 {
-    ei_init();
-    loop();
-    return 0;
+  // ei_init() is deprecated in OTP 23+, no longer needed
+  /*   ei_init() was needed for old OTPs to initialize the EI library manually. */
+  /* Modern OTPs initialize EI automatically — the function is gone. */
+  /* Removing it prevents link errors and changes nothing in behavior. */
+  // ei_init();
+  loop();
+  return 0;
 }
